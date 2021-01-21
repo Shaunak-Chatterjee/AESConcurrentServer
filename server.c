@@ -85,7 +85,7 @@ void *connection_handler(void *socket_desc)
     unsigned char dec_out[80];
     unsigned char enc_out[80];
 
-    
+    char *blank = "kZ}l5";
     //Get the socket descriptor
     int sock = *(int*)socket_desc;
     int read_size,n;
@@ -108,19 +108,23 @@ void *connection_handler(void *socket_desc)
         {
             read(sock,md_hash,16);
             AES_decrypt(enc_out, dec_out, &dec_key);
+            printf("%s\n",enc_out);
             compute_md5(dec_out, hash);
-            n--;
-        }
-        if(!(strncmp(md_hash,hash,7)))
-            printf("%s: %s\n",user,dec_out);
-        printf("Reply %s> ",user);
-        scanf("%s",client_message);
-        compute_md5(client_message,md_hash);
-        AES_encrypt(client_message, enc_out, &enc_key); 
-        printf("Encrypted: %s\n",enc_out); 
-        write(sock, enc_out, 1024);
-        write(sock, md_hash, 1024);  
-        bzero(client_message,2000);  
+	        n--;
+	        if(!(strncmp(md_hash,hash,7)) && strlen(dec_out)!=0 )
+	        {
+	            printf("%s: %s\n",user,dec_out);
+	            printf("Reply %s> ",user);
+			    scanf("%s",client_message);
+			    compute_md5(client_message,md_hash);
+			    AES_encrypt(client_message, enc_out, &enc_key); 
+			    sleep(2); 
+			    write(sock, enc_out, 1024);
+			    write(sock, md_hash, 1024);
+			    bzero(client_message,2000);
+	        }
+        } 
+          
     }
     if(read_size == 0)
     {

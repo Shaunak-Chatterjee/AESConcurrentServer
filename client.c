@@ -46,25 +46,30 @@ int main()
 	printf("%s\n",buff );
 	scanf("%s",user);
 	write(socket_desc,user,sizeof(user));
-	
+	int flag=1;
 	while(1)
 	{
 		//Encryption
 		AES_set_encrypt_key(key, 128, &enc_key);
 		//Decryption
 		AES_set_decrypt_key(key, 128, &dec_key);
-		printf("Message> ");
-		scanf("%s",buff);
+		if(flag){
+			printf("Message> ");
+			scanf("%s",buff);
+		}
 		//AES Encrypt
 	    AES_encrypt(buff, enc_out, &enc_key);
 	    compute_md5(buff,md_hash);
+	    sleep(2);
 	    write(socket_desc, enc_out, sizeof(enc_out));
 	    write(socket_desc,md_hash,16);
 	    bzero(buff,2000);
+
 		//AES decrypt
+		int n=1;
 		if(read(socket_desc,enc_out,80)>0)
-		{
-			int n=1;
+		{	
+			flag=0;
 			while(n>0)
 		    {
 			    read(socket_desc,md_hash,1024);
@@ -72,14 +77,16 @@ int main()
 			    compute_md5(dec_out, hash);
 				n--;
 			}
+			
+			if(!(strncmp(md_hash,hash,7)))
+            	{
+            		printf("Server: %s\n",dec_out);
+            		flag=1;
+            	}
          }   
-        /*
-    	AES_decrypt(enc_out, dec_out, &dec_key);
-    	printf("Server Message: %s\n",dec_out );
-        compute_md5(dec_out, hash);
-       */
-        if(!(strncmp(md_hash,hash,7)))
-            printf("Server: %s\n",dec_out);
+        //printf("C_Hash: %s\nR_Hash: %s\n",hash,md_hash);
+        bzero(hash,16);
+        //sleep(2);
 	}
 		close(socket_desc);
 		return 0;	
