@@ -16,3 +16,4 @@ Part 2: The 2nd part of the project is to encrypt data between server and client
 
 Part 3: The 3rd part of the project preserves integrity of data between server and clients. In this part each client computes a hash of data using a popular hashing method MD5. All the data from server to clients and clients to server will be hashed. Server and clients both will check sent hash value before accepting the data.
 
+![Alt text](ss.jpg?raw=true "Screenshot")
