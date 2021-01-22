@@ -85,7 +85,6 @@ void *connection_handler(void *socket_desc)
     unsigned char dec_out[80];
     unsigned char enc_out[80];
 
-    char *blank = "kZ}l5";
     //Get the socket descriptor
     int sock = *(int*)socket_desc;
     int read_size,n;
@@ -108,7 +107,6 @@ void *connection_handler(void *socket_desc)
         {
             read(sock,md_hash,16);
             AES_decrypt(enc_out, dec_out, &dec_key);
-            printf("%s\n",enc_out);
             compute_md5(dec_out, hash);
 	        n--;
 	        if(!(strncmp(md_hash,hash,7)) && strlen(dec_out)!=0 )
